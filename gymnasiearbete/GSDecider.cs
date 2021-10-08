@@ -28,17 +28,22 @@ namespace gymnasiearbete
         public static Gamestates Currentstate = Gamestates.menu;
         public static Gamemodes GCurrentState = Gamemodes.undefined;
 
+        public static bool singleplayer = false;
+        public static bool multiplayer = false;
+
         public static void UpdateGamestates(List<Buttons> gamebuttons)
         {
             if (mousereader.LeftClick() && gamebuttons[0]._bb.Contains(mousereader.mouseState.Position))
             {
                 GCurrentState = Gamemodes.singleplayer;
                 Currentstate = Gamestates.grid;
+                singleplayer = true;
             }
             else if (mousereader.LeftClick() && gamebuttons[1]._bb.Contains(mousereader.mouseState.Position))
             {
                 GCurrentState = Gamemodes.multiplayer;
                 Currentstate = Gamestates.grid;
+                multiplayer = true;
             }
         }
             

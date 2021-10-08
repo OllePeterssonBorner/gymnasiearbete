@@ -19,11 +19,11 @@ namespace gymnasiearbete
         public float _rotation;
         public Rectangle _bb;
         public string _playername;
-        public int netvalue;
-        public int gamepiece;
-        public int selectedfarm;
-        public int gamepiececolor;
-        public int seedselection;
+        public int _netvalue;
+        public int _gamepiece;
+        public int _selectedfarm;
+        public int _gamepiececolor;
+        public int _seedselection;
 
 
 

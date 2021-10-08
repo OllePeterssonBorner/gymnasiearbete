@@ -40,6 +40,7 @@ namespace gymnasiearbete
         public SpriteFont flerspelarlagetext;
         public SpriteFont väljspelaretext;
         public SpriteFont väljspelaretexträknare;
+        public SpriteFont väljspelarefärg;
 
         //Lista och texturer lower bar
         public List<Buttons> lowerbar;
@@ -66,10 +67,18 @@ namespace gymnasiearbete
 
         public static bool HasSelectedGP = false;
         public int playercounter = 1;
-        public static bool HasSelectedPlayeramount = false;
+        public bool HasSelectedPlayeramount = false;
         public List<Players> playerhandler;
-        
-        
+        public static bool[] availablecolor;
+        public static bool[] tts;
+
+       
+
+        public static bool timetodraw = false;
+
+        public int selectedsingleplayercolor;
+
+
 
         //Spelareväljare
 
@@ -107,6 +116,7 @@ namespace gymnasiearbete
             lowerbar = new List<Buttons>();
             gamepieces = new List<Object>();
             playerselectorobjects = new List<Object>();
+            playerhandler = new List<Players>();
            
 
             base.Initialize();
@@ -121,6 +131,7 @@ namespace gymnasiearbete
             flerspelarlagetext = Content.Load<SpriteFont>("sptext");
             väljspelaretext = Content.Load<SpriteFont>("sptext");
             väljspelaretexträknare = Content.Load<SpriteFont>("sptext");
+            väljspelarefärg = Content.Load<SpriteFont>("sptext");
 
             gridImg = Content.Load<Texture2D>("bondespelet spelplan");
             menuImg = Content.Load<Texture2D>("mainmenu flat");
@@ -188,10 +199,17 @@ namespace gymnasiearbete
             playerselectorobjects.Add(new Object(downarrowImg, new Vector2(760, 800), new Vector2(0, 0), 0.0f, 1.58f, 1.0f, 0));
 
             //förbestämda spelare
-            playerhandler.Add(new Players(gamecircleYImg, new Vector2(100, 100), 0.0f, 1.0f, 0, "", 50000, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleGImg, new Vector2(100, 100), 0.0f, 1.0f, 0, "", 50000, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleRImg, new Vector2(100, 100), 0.0f, 1.0f, 0, "", 50000, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleBImg, new Vector2(100, 100), 0.0f, 1.0f, 0, "", 50000, 0, 0, 0));
+            
+
+            gamecircleYImg = Content.Load<Texture2D>("cirkel gul t");
+            gamecircleGImg = Content.Load<Texture2D>("cirkel grön t");
+            gamecircleRImg = Content.Load<Texture2D>("cirkel röd t");
+            gamecircleBImg = Content.Load<Texture2D>("cirkel blå t");
+
+            playerhandler.Add(new Players(gamecircleYImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleGImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleRImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleBImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
         }
 
         protected override void Update(GameTime gameTime)
@@ -211,14 +229,35 @@ namespace gymnasiearbete
           
                     
             }
+
+            //if (GSDecider)
             if (mousereader.LeftClick() && playercounter > 1 && playerselectorobjects[2]._bb.Contains(mousereader.mouseState.Position))
             {
                     playercounter--;
             }
 
-            if (mousereader.keyState.IsKeyDown(Keys.Enter))
+            if (mousereader.keyState.IsKeyDown(Keys.Enter) && HasSelectedPlayeramount != true)
             {
+
                 HasSelectedPlayeramount = true;
+                
+            }
+
+            if (GSDecider.multiplayer == true)
+            {
+
+            }
+
+            if (GSDecider.singleplayer == true)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (mousereader.LeftClick() && gamepieces[i]._bb.Contains(mousereader.mouseState.Position))
+                    {
+                        HasSelectedGP = true;
+                        selectedsingleplayercolor = i;
+                    }
+                }
             }
 
             base.Update(gameTime);
@@ -228,6 +267,7 @@ namespace gymnasiearbete
         {
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
+            
             
 
             switch (GSDecider.Currentstate)
@@ -247,57 +287,110 @@ namespace gymnasiearbete
                 case GSDecider.Gamestates.grid:
                     gamestatetextures[1].Draw(_spriteBatch);
 
-                    switch (GSDecider.GCurrentState)
+                    switch (GSDecider.GCurrentState) // Single/multi-player avgörande
                     {
+
+                        //Singlelayerutritning
+
                         case GSDecider.Gamemodes.singleplayer:
-                            HasSelectedGP = false;
+
+
+
+                            if (!HasSelectedGP)
+                            {
+                                _spriteBatch.DrawString(väljspelarefärg, "Valj farg:", new Vector2(50, 815), Color.Black);
+                                
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    gamepieces[i].Draw(_spriteBatch);
+                                }
+                            }
+                            else if (HasSelectedGP)
+                            {
+                                playerhandler[selectedsingleplayercolor].Draw(_spriteBatch);
+                            }
+
+
+
+
+
+
+
                             break;
+
+
+                        //Multiplayerutritning
+
                         case GSDecider.Gamemodes.multiplayer:
 
-
-                          
-
-                        HasSelectedGP = false;
-                        if (HasSelectedPlayeramount != true)
+                        
+                        if (!HasSelectedPlayeramount)
                         {
-                            for (int i = 0; i < 3; i++)
-                            {
-                                playerselectorobjects[i].Draw(_spriteBatch);
-                            }
-                            _spriteBatch.DrawString(väljspelaretext, "Hur manga ar ni som vill spela?", new Vector2(50, 800), Color.Black);
-                            _spriteBatch.DrawString(väljspelaretexträknare, +playercounter + "", new Vector2(835, 815), Color.Black);
+
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    playerselectorobjects[i].Draw(_spriteBatch);
+                                }
+
+                                _spriteBatch.DrawString(väljspelaretext, "Hur manga ar ni som vill spela?", new Vector2(50, 800), Color.Black);
+                                _spriteBatch.DrawString(väljspelaretexträknare, +playercounter + "", new Vector2(835, 815), Color.Black);
+                               
 
                             
 
                               
                         }
-                            
-                            break;
-                    }
-                    if (HasSelectedGP == true)
-                    {
-                        lowerbar[0].Draw(_spriteBatch);
-
-                        for (int i = 0; i < 4; i++)
+                        else if (HasSelectedPlayeramount)
                         {
-                            gamepieces[i].Draw(_spriteBatch);
-                        }
-
-                        for (int i = 0; i < gamepieces.Count; i++)
-                        {
-                            if (mousereader.LeftClick() && gamepieces[i]._bb.Contains(mousereader.mouseState.Position))
+                            for (int i = 0; i < playercounter; i++)
                             {
                                 playerhandler[i].Draw(_spriteBatch);
                             }
                         }
-                        
-                       
-                        
 
+
+                            break;
                     }
 
+                   
+                    
+                //if (HasSelectedGP == false && HasSelectedPlayeramount == true)
+                //{
+                    
 
-                    break;
+                //    lowerbar[0].Draw(_spriteBatch);
+
+                //        for (int i = 0; i < playercounter; i++)
+                //        {
+                //            if (availablecolor[i] == true)
+                //            {
+                //                gamepieces[i].Draw(_spriteBatch);
+                //            }
+
+                //        }
+
+                      
+
+                  
+                    
+
+
+
+
+
+
+
+
+
+                //}
+                
+                break;
+            
+            
+                    
+
+
+                    
 
                 case GSDecider.Gamestates.plantcard:
                     gamestatetextures[2].Draw(_spriteBatch);
