@@ -24,11 +24,12 @@ namespace gymnasiearbete
         public int _selectedfarm;
         public int _gamepiececolor;
         public int _seedselection;
+        public int _squareposition;
 
 
 
 
-        public Players(Texture2D img, Vector2 pos, float scale, string playername, int netvalue, int gamepiececolor, int selectedfarm, int seedselection)
+        public Players(Texture2D img, Vector2 pos, float scale, string playername, int netvalue, int gamepiececolor, int selectedfarm, int seedselection, int squareposition)
         {
 
             Random r = new Random();
@@ -41,6 +42,7 @@ namespace gymnasiearbete
             this._gamepiececolor = gamepiececolor;
             this._selectedfarm = selectedfarm;
             this._seedselection = seedselection;
+            this._squareposition = squareposition;
             this._origin = Vector2.Zero;
             this._bb = new Rectangle((int)pos.X, (int)pos.Y, img.Width, img.Height);
            

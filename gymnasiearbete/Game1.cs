@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Timers;
+
 
 namespace gymnasiearbete
 {
@@ -16,7 +18,7 @@ namespace gymnasiearbete
         public Texture2D gridImg;
         public Texture2D menuImg;
         public Texture2D plantcardImg;
-        
+
         // Lista och texturer för säsongskorten
         public List<Object> Seasoncards;
         public Texture2D seasoncardSpringImg;
@@ -45,7 +47,7 @@ namespace gymnasiearbete
         //Lista och texturer lower bar
         public List<Buttons> lowerbar;
         public Texture2D selectgamepiecelowerbarImg;
-       
+
 
         //Lista och texturer för game player
 
@@ -57,7 +59,7 @@ namespace gymnasiearbete
         public Texture2D gamepieceGImg;
         public Texture2D gamepieceRImg;
         public Texture2D gamepieceBImg;
-        
+
         public Texture2D gamecircleYImg;
         public Texture2D gamecircleGImg;
         public Texture2D gamecircleRImg;
@@ -66,19 +68,26 @@ namespace gymnasiearbete
         //Spellogik variabler
 
         public static bool HasSelectedGP = false;
-        public int playercounter = 1;
+        public static int playercounter = 1;
         public bool HasSelectedPlayeramount = false;
-        public List<Players> playerhandler;
+        public static List<Players> playerhandler;
         public static bool[] availablecolor;
         public static bool[] tts;
+        public static int whoseturn;
 
-       
+        public static Random r = new Random();
 
         public static bool timetodraw = false;
 
         public int selectedsingleplayercolor;
 
+        public static bool tsornot = false;
 
+        public static bool pressingdie = false;
+
+ 
+
+        System.Timers.Timer stopwatch = new System.Timers.Timer(5000);
 
         //Spelareväljare
 
@@ -86,10 +95,65 @@ namespace gymnasiearbete
         public Texture2D downarrowImg;
         public Texture2D uparrowImg;
         public Texture2D blacksquareImg;
-       
+
+
+        //tärning
+        public static List<Object> dice = new List<Object>();
+        public Texture2D die1;
+        public Texture2D die2;
+        public Texture2D die3;
+        public Texture2D die4;
+        public Texture2D die5;
+        public Texture2D die6;
+        public static int[] dtd = new int[6];
 
 
 
+        public static List<Rectangle> hitboxes = new List<Rectangle>();
+
+        public static List<int> redboxes =  new List<int>() { 1,2,3,4,5,6,7, 12, 19, 24, 31, 35, 40, 51, 56, 61, 68, 73, 80, 85, 90 };
+
+        public static void BuildGameBoardHitboxes()
+        {
+            int startX1 = 60;
+            int startY1 = 740;
+
+            int blockWidth1 = 33;
+            int blockHeight1 = 25;
+
+            int startX2 = 978;
+            int startY2 = 46;
+
+
+
+            int startX3 = 46;
+            int startY3 = 20;
+
+
+
+            int startX4 = 20;
+            int startY4 = 60;
+
+
+
+
+            for (int i = 0; i < 26; i++)
+            {
+                hitboxes.Add(new Rectangle(startX1 + i * blockWidth1 + i, startY1, blockWidth1, blockHeight1));
+            }
+            for (int i = 19; i > 0; i--)
+            {
+                hitboxes.Add(new Rectangle(startX2, startY2 + i * blockWidth1 + i, blockHeight1, blockWidth1));
+            }
+            for (int i = 26; i > 0; i--)
+            {
+                hitboxes.Add(new Rectangle(startX3 + i * blockWidth1 + i, startY3, blockWidth1, blockHeight1));
+            }
+            for (int i = 0; i < 19; i++)
+            {
+                hitboxes.Add(new Rectangle(startX4, startY4 + i * blockWidth1 + i, blockHeight1, blockWidth1));
+            }
+        }
 
 
 
@@ -117,11 +181,19 @@ namespace gymnasiearbete
             gamepieces = new List<Object>();
             playerselectorobjects = new List<Object>();
             playerhandler = new List<Players>();
-           
+
+            dice = new List<Object>();
+
+            dtd = new int[6];
+
+            
+            BuildGameBoardHitboxes();
+
+
 
             base.Initialize();
         }
-    
+
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -157,16 +229,16 @@ namespace gymnasiearbete
             potatoplantImg = Content.Load<Texture2D>("t potatis");
             carrotplantImg = Content.Load<Texture2D>("t morot");
             wheatplantImg = Content.Load<Texture2D>("t säd");
-            
+
             cereal.Add(new Object(beetplantImg, new Vector2(524, 147), new Vector2(0, 0), 0.0f, 0, 0.305f, 0));
             cereal.Add(new Object(potatoplantImg, new Vector2(428, 143), new Vector2(0, 0), 0.0f, 0, 0.305f, 0));
             cereal.Add(new Object(carrotplantImg, new Vector2(325, 147), new Vector2(0, 0), 0.0f, 0, 0.27f, 0));
             cereal.Add(new Object(wheatplantImg, new Vector2(229, 144), new Vector2(0, 0), 0.0f, 0, 0.255f, 0));
- 
+
             // main menu options
             mainmenubutton1Img = Content.Load<Texture2D>("mainmenu buttontemplate");
             mainmenubutton2Img = Content.Load<Texture2D>("mainmenu button 2");
-           
+
             gamebuttons.Add(new Buttons(mainmenubutton2Img, new Vector2(286, 50), 1.0f));
             gamebuttons.Add(new Buttons(mainmenubutton2Img, new Vector2(286, 200), 1.0f));
 
@@ -192,29 +264,53 @@ namespace gymnasiearbete
             downarrowImg = Content.Load<Texture2D>("pil nedåt");
             uparrowImg = Content.Load<Texture2D>("pil uppåt");
             blacksquareImg = Content.Load<Texture2D>("välj spelare ruta");
-            
-            
+
+
             playerselectorobjects.Add(new Object(uparrowImg, new Vector2(980, 800), new Vector2(0, 0), 0.0f, 1.58f, 1.0f, 0));
             playerselectorobjects.Add(new Object(blacksquareImg, new Vector2(800, 800), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
             playerselectorobjects.Add(new Object(downarrowImg, new Vector2(760, 800), new Vector2(0, 0), 0.0f, 1.58f, 1.0f, 0));
 
             //förbestämda spelare
-            
+
 
             gamecircleYImg = Content.Load<Texture2D>("cirkel gul t");
             gamecircleGImg = Content.Load<Texture2D>("cirkel grön t");
             gamecircleRImg = Content.Load<Texture2D>("cirkel röd t");
             gamecircleBImg = Content.Load<Texture2D>("cirkel blå t");
 
-            playerhandler.Add(new Players(gamecircleYImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleGImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleRImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleBImg, new Vector2(35, 750), 1.0f, "", 50000, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleYImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleGImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleRImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleBImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
+
+            //tärning
+
+            die1 = Content.Load<Texture2D>("tärning ett");
+            die2 = Content.Load<Texture2D>("tärning två");
+            die3 = Content.Load<Texture2D>("tärning tre");
+            die4 = Content.Load<Texture2D>("tärning fyra");
+            die5 = Content.Load<Texture2D>("tärning fem");
+            die6 = Content.Load<Texture2D>("tärning sex");
+
+            dice.Add(new Object(die1, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die2, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die3, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die4, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die5, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die6, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+
+            
+
         }
+
+
+       
 
         protected override void Update(GameTime gameTime)
         {
             mousereader.Update();
+
+
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -223,24 +319,39 @@ namespace gymnasiearbete
 
             if (mousereader.LeftClick() && playercounter < 4 && playerselectorobjects[0]._bb.Contains(mousereader.mouseState.Position))
 
-            { 
-                    playercounter++;
-                
-          
-                    
+            {
+                playercounter++;
+
+
+
             }
 
             //if (GSDecider)
             if (mousereader.LeftClick() && playercounter > 1 && playerselectorobjects[2]._bb.Contains(mousereader.mouseState.Position))
             {
-                    playercounter--;
+                playercounter--;
+            }
+
+
+            if (mousereader.LeftClick())
+            {
+                for (int i = 0; i < dice.Count; i++)
+                {
+                    if (dice[i]._bb.Contains(mousereader.mouseState.Position))
+                    {
+
+                        pressingdie = true;
+                        
+                    }
+                }
+
             }
 
             if (mousereader.keyState.IsKeyDown(Keys.Enter) && HasSelectedPlayeramount != true)
             {
 
                 HasSelectedPlayeramount = true;
-                
+
             }
 
             if (GSDecider.multiplayer == true)
@@ -260,18 +371,117 @@ namespace gymnasiearbete
                 }
             }
 
+           
+
             base.Update(gameTime);
+
+          
+        
         }
+        public static int SeasonCardCaller(Players playerhandler, int moneyinflux)
+        {
+            if (playerhandler._squareposition <= 26)
+            {
+                GSDecider.Currentstate = GSDecider.Gamestates.seasoncardY;
+            }
+            else if (playerhandler._squareposition >= 27 && playerhandler._squareposition <= 45)
+            {
+                GSDecider.Currentstate = GSDecider.Gamestates.seasoncardG;
+            }
+            else if (playerhandler._squareposition >= 46 && playerhandler._squareposition <= 71)
+            {
+                GSDecider.Currentstate = GSDecider.Gamestates.seasoncardR;
+            }
+            else if (playerhandler._squareposition >= 72)
+            {
+                GSDecider.Currentstate = GSDecider.Gamestates.seasoncardB;
+            }
+
+            return moneyinflux;
+        }
+            
+        
+        public static int WhoseTurnReloop()
+        {
+            if (whoseturn == playercounter)
+            {
+                whoseturn = 0;
+            }
+            else
+            {
+                whoseturn++;
+            }
+
+            return whoseturn;
+        }
+
+        static double futureTimestamp = 0.1;
+        static int currentDie = 1;
+
+        static int AbsoluteDrawer(GameTime gameTime, SpriteBatch _spriteBatch)
+        {
+            double currentTime = gameTime.TotalGameTime.TotalSeconds;
+
+                
+            
+            if (futureTimestamp < currentTime && newGT > currentTime)
+            {
+                futureTimestamp = currentTime + 0.1;
+                currentDie = r.Next(1, 7);
+
+                    
+
+            }
+            else if (newGT < currentTime && futureTimestamp > currentTime)
+            {
+                playerhandler[whoseturn]._squareposition += currentDie - 1;
+
+                foreach (int o in redboxes)
+                {
+                    if (playerhandler[whoseturn - 1]._squareposition == o)
+                    {
+                        SeasonCardCaller(playerhandler[whoseturn], 1);
+                    }
+                }
+
+                playerhandler[whoseturn]._pos.X = hitboxes[playerhandler[whoseturn]._squareposition].X;
+                playerhandler[whoseturn]._pos.Y = hitboxes[playerhandler[whoseturn]._squareposition].Y;
+
+               
+
+                WhoseTurnReloop();
+            }
+
+
+
+
+
+
+
+
+            return currentDie;
+               
+
+
+        }
+     
+        public static double newGT = 0;
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
+
+            
+           
+           
             
             
 
-            switch (GSDecider.Currentstate)
-            {
+
+
+                switch (GSDecider.Currentstate)
+                {
                 case GSDecider.Gamestates.menu:
                     gamestatetextures[0].Draw(_spriteBatch);
                     for (int i = 0; i < gamebuttons.Count; i++)
@@ -294,7 +504,7 @@ namespace gymnasiearbete
 
                         case GSDecider.Gamemodes.singleplayer:
 
-
+                            HasSelectedPlayeramount = true;
 
                             if (!HasSelectedGP)
                             {
@@ -323,9 +533,14 @@ namespace gymnasiearbete
 
                         case GSDecider.Gamemodes.multiplayer:
 
-                        
-                        if (!HasSelectedPlayeramount)
-                        {
+
+                            AbsoluteDrawer(gameTime, _spriteBatch);
+
+                            
+                            dice[currentDie - 1].Draw(_spriteBatch);
+
+                            if (!HasSelectedPlayeramount)
+                            {
 
                                 for (int i = 0; i < 3; i++)
                                 {
@@ -334,57 +549,101 @@ namespace gymnasiearbete
 
                                 _spriteBatch.DrawString(väljspelaretext, "Hur manga ar ni som vill spela?", new Vector2(50, 800), Color.Black);
                                 _spriteBatch.DrawString(väljspelaretexträknare, +playercounter + "", new Vector2(835, 815), Color.Black);
-                               
 
-                            
+
+
+
+
+                            }
+
+                            else if (HasSelectedPlayeramount)
+                            {
+                                if (pressingdie == true)
+                                {
+                                  
+                                    newGT = gameTime.TotalGameTime.TotalSeconds + 2;
+                                    pressingdie = false;
+                                }
+
+                             
+                                
+                                
+
+
+
+                                for (int i = 0; i < playercounter; i++)
+                                {
+                                    _spriteBatch.DrawString(väljspelaretext, "Spelare:" + (i + 1) + "", new Vector2(50 + i * 230, 780), Color.Black);
+                                    _spriteBatch.DrawString(väljspelaretext, +playerhandler[i]._netvalue + " SEK", new Vector2(50 + i * 230, 820), Color.Black);
+                                }
+
+
+
 
                               
-                        }
-                        else if (HasSelectedPlayeramount)
-                        {
-                            for (int i = 0; i < playercounter; i++)
-                            {
-                                playerhandler[i].Draw(_spriteBatch);
+
+
+
+
+                                for (int i  = 0; i < playercounter; i++)
+                                {
+                                    playerhandler[i].Draw(_spriteBatch);
+                                }
+
+
+                                
+
                             }
-                        }
+
+                            
 
 
                             break;
                     }
 
-                   
-                    
-                //if (HasSelectedGP == false && HasSelectedPlayeramount == true)
-                //{
-                    
+                    //for (int i = 0; i < hitboxes.Count; i++)
+                    //{
+                    //    _spriteBatch.Draw(blacksquareImg, hitboxes[i], Color.White);
 
-                //    lowerbar[0].Draw(_spriteBatch);
-
-                //        for (int i = 0; i < playercounter; i++)
-                //        {
-                //            if (availablecolor[i] == true)
-                //            {
-                //                gamepieces[i].Draw(_spriteBatch);
-                //            }
-
-                //        }
-
-                      
-
-                  
-                    
+                    //    //_spriteBatch.DrawString(väljspelaretext, + (i + 1) + "", new Vector2(hitboxes[i].X, hitboxes[i].Y), Color.Black);
+                    //}
 
 
 
 
 
 
+                    //if (HasSelectedGP == false && HasSelectedPlayeramount == true)
+                    //{
+
+
+                    //    lowerbar[0].Draw(_spriteBatch);
+
+                    //        for (int i = 0; i < playercounter; i++)
+                    //        {
+                    //            if (availablecolor[i] == true)
+                    //            {
+                    //                gamepieces[i].Draw(_spriteBatch);
+                    //            }
+
+                    //        }
 
 
 
-                //}
-                
-                break;
+
+
+
+
+
+
+
+
+
+
+
+                    //}
+
+                    break;
             
             
                     
@@ -421,6 +680,12 @@ namespace gymnasiearbete
 
                     break;
             }
+
+
+           
+
+                
+            
 
             _spriteBatch.End();
             base.Draw(gameTime);
