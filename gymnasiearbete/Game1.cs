@@ -14,6 +14,7 @@ namespace gymnasiearbete
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        public static Color javariabel = Color.Black;
         public List<Object> gamestatetextures;
         public Texture2D gridImg;
         public Texture2D menuImg;
@@ -43,6 +44,12 @@ namespace gymnasiearbete
         public SpriteFont väljspelaretext;
         public SpriteFont väljspelaretexträknare;
         public SpriteFont väljspelarefärg;
+        public SpriteFont seasontexts;
+
+        public static List<String> seasonYtexts;
+        public static List<String> seasonGtexts;
+        public static List<String> seasonRtexts;
+        public static List<String> seasonBtexts;
 
         //Lista och texturer lower bar
         public List<Buttons> lowerbar;
@@ -73,7 +80,9 @@ namespace gymnasiearbete
         public static List<Players> playerhandler;
         public static bool[] availablecolor;
         public static bool[] tts;
-        public static int whoseturn;
+
+
+        public static bool seasoncallerbool = false;
 
         public static Random r = new Random();
 
@@ -85,7 +94,11 @@ namespace gymnasiearbete
 
         public static bool pressingdie = false;
 
- 
+        public static bool hpe = false;
+
+        public static bool nhps = false;
+
+
 
         System.Timers.Timer stopwatch = new System.Timers.Timer(5000);
 
@@ -111,7 +124,7 @@ namespace gymnasiearbete
 
         public static List<Rectangle> hitboxes = new List<Rectangle>();
 
-        public static List<int> redboxes =  new List<int>() { 1,2,3,4,5,6,7, 12, 19, 24, 31, 35, 40, 51, 56, 61, 68, 73, 80, 85, 90 };
+        public static List<int> redboxes = new List<int>() { 7, 12, 19, 24, 31, 35, 40, 51, 56, 61, 68, 73, 80, 85, 90 };
 
         public static void BuildGameBoardHitboxes()
         {
@@ -182,11 +195,18 @@ namespace gymnasiearbete
             playerselectorobjects = new List<Object>();
             playerhandler = new List<Players>();
 
+            seasonYtexts = new List<String>();
+            seasonGtexts = new List<String>();
+            seasonRtexts = new List<String>();
+            seasonBtexts = new List<String>();
+
+
+
             dice = new List<Object>();
 
             dtd = new int[6];
 
-            
+
             BuildGameBoardHitboxes();
 
 
@@ -278,10 +298,10 @@ namespace gymnasiearbete
             gamecircleRImg = Content.Load<Texture2D>("cirkel röd t");
             gamecircleBImg = Content.Load<Texture2D>("cirkel blå t");
 
-            playerhandler.Add(new Players(gamecircleYImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleGImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleRImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
-            playerhandler.Add(new Players(gamecircleBImg, new Vector2(20, 700), 1.0f, "", 50000, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleYImg, new Vector2(20, 700), 1.0f, "Pog 1", 50000, 1, 0, 0, -1, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleGImg, new Vector2(20, 700), 1.0f, "Pog 2", 50000, 1, 0, 0, -1, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleRImg, new Vector2(20, 700), 1.0f, "Pog 3", 50000, 1, 0, 0, -1, 0, 0, 0, 0));
+            playerhandler.Add(new Players(gamecircleBImg, new Vector2(20, 700), 1.0f, "Pog 4", 50000, 1, 0, 0, -1, 0, 0, 0, 0));
 
             //tärning
 
@@ -292,19 +312,28 @@ namespace gymnasiearbete
             die5 = Content.Load<Texture2D>("tärning fem");
             die6 = Content.Load<Texture2D>("tärning sex");
 
-            dice.Add(new Object(die1, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
-            dice.Add(new Object(die2, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
-            dice.Add(new Object(die3, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
-            dice.Add(new Object(die4, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
-            dice.Add(new Object(die5, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
-            dice.Add(new Object(die6, new Vector2(700, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die1, new Vector2(630, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die2, new Vector2(630, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die3, new Vector2(630, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die4, new Vector2(630, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die5, new Vector2(630, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
+            dice.Add(new Object(die6, new Vector2(630, 700), new Vector2(0, 0), 0.0f, 0.0f, 1.0f, 0));
 
-            
+
+            seasontexts = Content.Load<SpriteFont>("seasonYtexts");
+
+            seasonYtexts.Add("Hola! Kommer sno din veckopeng bror! \n \n -10 kr");
+            seasonYtexts.Add("Hola! Du gloemde ge bibolek bok! \n \n -299 kr");
+            seasonYtexts.Add("Hola! Du gloemde pausa VOI, surprise faktura! \n \n -1000 kr");
+            seasonYtexts.Add("Hola! Du foerlorade inkomst; ortengaeng snodde sockerbetan! \n \n -100 kr");
+            seasonYtexts.Add("Hola! Du slangade bensin fraan grannen, han gav dig \n \n 19 kr");
+            seasonYtexts.Add("Hola! Din faster gick bort, tragiskt. Begravningsomkostnaderna landar paa dig \n \n -1800 kr");
+            seasonYtexts.Add("Hola! Din faster gick bort, tragiskt. Hon laemnade ett ansenligt arv \n \n 200000 kr");
 
         }
 
 
-       
+
 
         protected override void Update(GameTime gameTime)
         {
@@ -317,9 +346,10 @@ namespace gymnasiearbete
 
             GSDecider.UpdateGamestates(gamebuttons);
 
-            if (mousereader.LeftClick() && playercounter < 4 && playerselectorobjects[0]._bb.Contains(mousereader.mouseState.Position))
+            if (mousereader.LeftClick() && playercounter < 4 && playerselectorobjects[0]._bb.Contains(mousereader.mouseState.Position) && GSDecider.Currentstate == GSDecider.Gamestates.grid && !HasSelectedGP)
 
             {
+
                 playercounter++;
 
 
@@ -327,7 +357,7 @@ namespace gymnasiearbete
             }
 
             //if (GSDecider)
-            if (mousereader.LeftClick() && playercounter > 1 && playerselectorobjects[2]._bb.Contains(mousereader.mouseState.Position))
+            if (mousereader.LeftClick() && playercounter > 1 && playerselectorobjects[2]._bb.Contains(mousereader.mouseState.Position) && GSDecider.Currentstate == GSDecider.Gamestates.grid && !HasSelectedGP)
             {
                 playercounter--;
             }
@@ -337,15 +367,57 @@ namespace gymnasiearbete
             {
                 for (int i = 0; i < dice.Count; i++)
                 {
-                    if (dice[i]._bb.Contains(mousereader.mouseState.Position))
+                    if (dice[i]._bb.Contains(mousereader.mouseState.Position) &&  GSDecider.Currentstate == GSDecider.Gamestates.grid && HasSelectedGP)
                     {
 
                         pressingdie = true;
-                        
+
+
+
                     }
                 }
 
             }
+
+            if (mousereader.LeftClick() && HasSelectedPlayeramount && (playerhandler[whoseturn + 1]._beetA + playerhandler[whoseturn + 1]._potaA + playerhandler[whoseturn + 1]._carrA + playerhandler[whoseturn + 1]._wheaA) <= 2)
+            {
+
+                if (cereal[0]._bb.Contains(mousereader.mouseState.Position))
+                {
+                    playerhandler[whoseturn + 1]._beetA += 1;
+                }
+                else if (cereal[1]._bb.Contains(mousereader.mouseState.Position))
+                {
+                    playerhandler[whoseturn + 1]._potaA += 1;
+                }
+                else if (cereal[2]._bb.Contains(mousereader.mouseState.Position))
+                {
+                    playerhandler[whoseturn + 1]._carrA += 1;
+                }
+                else if (cereal[3]._bb.Contains(mousereader.mouseState.Position))
+                {
+                    playerhandler[whoseturn + 1]._wheaA += 1;
+                }
+
+                
+               
+            }
+            if (mousereader.keyState.IsKeyDown(Keys.Enter) && ((playerhandler[whoseturn + 1]._beetA + playerhandler[whoseturn + 1]._potaA + playerhandler[whoseturn + 1]._carrA + playerhandler[whoseturn + 1]._wheaA) >= 3))
+            {
+                if ((whoseturn + 2) < playercounter)
+                {
+                    WhoseTurnReloop();
+                }
+                else
+                {
+                    GSDecider.Currentstate = GSDecider.Gamestates.grid;
+                }
+                
+            }
+
+
+            // playerhandler[whoseturn]._gamepiececolor = 2;
+
 
             if (mousereader.keyState.IsKeyDown(Keys.Enter) && HasSelectedPlayeramount != true)
             {
@@ -353,11 +425,26 @@ namespace gymnasiearbete
                 HasSelectedPlayeramount = true;
 
             }
+            if (mousereader.keyState.IsKeyDown(Keys.Enter) && seasoncallerbool == true)
+            {
+
+
+
+                GSDecider.Currentstate = GSDecider.Gamestates.grid;
+                seasoncallerbool = false;
+
+            }
 
             if (GSDecider.multiplayer == true)
             {
 
             }
+
+            if (GSDecider.Currentstate == GSDecider.Gamestates.seeddecider && hpe == false && mousereader.keyState.IsKeyDown(Keys.Enter))
+            {
+                hpe = true;
+            }
+
 
             if (GSDecider.singleplayer == true)
             {
@@ -371,39 +458,49 @@ namespace gymnasiearbete
                 }
             }
 
-           
+
 
             base.Update(gameTime);
 
-          
-        
+
+
         }
-        public static int SeasonCardCaller(Players playerhandler, int moneyinflux)
+        public static int whoseturn = -1;
+        public static int fun = 0;
+        public static int SeasonCardCaller(Players player, int moneyinflux)
         {
-            if (playerhandler._squareposition <= 26)
+
+            seasoncallerbool = true;
+
+            fun = r.Next(0, seasonYtexts.Count);
+
+            if (player._squareposition <= 26)
             {
                 GSDecider.Currentstate = GSDecider.Gamestates.seasoncardY;
             }
-            else if (playerhandler._squareposition >= 27 && playerhandler._squareposition <= 45)
+            else if (player._squareposition >= 27 && player._squareposition <= 45)
             {
                 GSDecider.Currentstate = GSDecider.Gamestates.seasoncardG;
             }
-            else if (playerhandler._squareposition >= 46 && playerhandler._squareposition <= 71)
+            else if (player._squareposition >= 46 && player._squareposition <= 71)
             {
                 GSDecider.Currentstate = GSDecider.Gamestates.seasoncardR;
             }
-            else if (playerhandler._squareposition >= 72)
+            else if (player._squareposition >= 72)
             {
                 GSDecider.Currentstate = GSDecider.Gamestates.seasoncardB;
             }
 
+            string[] splitted = seasonYtexts[fun].Split(' ');
+            player._netvalue += Convert.ToInt32(splitted[splitted.Length - 2]);
+
             return moneyinflux;
         }
-            
-        
+
+
         public static int WhoseTurnReloop()
         {
-            if (whoseturn == playercounter)
+            if (whoseturn == playercounter - 1)
             {
                 whoseturn = 0;
             }
@@ -422,34 +519,40 @@ namespace gymnasiearbete
         {
             double currentTime = gameTime.TotalGameTime.TotalSeconds;
 
-                
-            
+
+
             if (futureTimestamp < currentTime && newGT > currentTime)
             {
                 futureTimestamp = currentTime + 0.1;
                 currentDie = r.Next(1, 7);
 
-                    
+
 
             }
             else if (newGT < currentTime && futureTimestamp > currentTime)
             {
-                playerhandler[whoseturn]._squareposition += currentDie - 1;
+                playerhandler[whoseturn]._squareposition += currentDie;
 
                 foreach (int o in redboxes)
                 {
-                    if (playerhandler[whoseturn - 1]._squareposition == o)
+                    try
                     {
-                        SeasonCardCaller(playerhandler[whoseturn], 1);
+                        if (playerhandler[whoseturn]._squareposition + 1 == o)
+                        {
+                            SeasonCardCaller(playerhandler[whoseturn], 1);
+                        }
+                    }
+                    catch
+                    {
+
                     }
                 }
 
                 playerhandler[whoseturn]._pos.X = hitboxes[playerhandler[whoseturn]._squareposition].X;
                 playerhandler[whoseturn]._pos.Y = hitboxes[playerhandler[whoseturn]._squareposition].Y;
 
-               
 
-                WhoseTurnReloop();
+
             }
 
 
@@ -460,11 +563,11 @@ namespace gymnasiearbete
 
 
             return currentDie;
-               
+
 
 
         }
-     
+
         public static double newGT = 0;
 
         protected override void Draw(GameTime gameTime)
@@ -472,16 +575,16 @@ namespace gymnasiearbete
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
 
-            
-           
-           
-            
-            
+            Random r = new Random();
 
 
 
-                switch (GSDecider.Currentstate)
-                {
+
+
+
+
+            switch (GSDecider.Currentstate)
+            {
                 case GSDecider.Gamestates.menu:
                     gamestatetextures[0].Draw(_spriteBatch);
                     for (int i = 0; i < gamebuttons.Count; i++)
@@ -493,6 +596,26 @@ namespace gymnasiearbete
 
 
                     break;
+
+
+
+
+                case GSDecider.Gamestates.seeddecider:
+
+                    if (hpe != true)
+                    {
+                        gamestatetextures[1].Draw(_spriteBatch);
+                        _spriteBatch.DrawString(enspelarlagetext, playerhandler[whoseturn]._playername + "tur att vaelja saedeslag, tryck enter", new Vector2(390, 80), Color.PaleTurquoise);
+                    }
+                    else if (hpe == true)
+                    {
+                        GSDecider.Currentstate = GSDecider.Gamestates.plantcard;
+                        _spriteBatch.DrawString(enspelarlagetext, "välj sädeslag genom att trycka på bilderna, du ska trycka 3 gånger ", new Vector2(390, 80), Color.PaleTurquoise);
+                    }
+
+                    break;
+
+
 
                 case GSDecider.Gamestates.grid:
                     gamestatetextures[1].Draw(_spriteBatch);
@@ -509,7 +632,7 @@ namespace gymnasiearbete
                             if (!HasSelectedGP)
                             {
                                 _spriteBatch.DrawString(väljspelarefärg, "Valj farg:", new Vector2(50, 815), Color.Black);
-                                
+
                                 for (int i = 0; i < 4; i++)
                                 {
                                     gamepieces[i].Draw(_spriteBatch);
@@ -536,8 +659,11 @@ namespace gymnasiearbete
 
                             AbsoluteDrawer(gameTime, _spriteBatch);
 
-                            
-                            dice[currentDie - 1].Draw(_spriteBatch);
+                            if (nhps == true)
+                            {
+                                dice[currentDie - 1].Draw(_spriteBatch);
+                            }
+
 
                             if (!HasSelectedPlayeramount)
                             {
@@ -554,48 +680,63 @@ namespace gymnasiearbete
 
 
 
+
                             }
 
                             else if (HasSelectedPlayeramount)
                             {
                                 if (pressingdie == true)
                                 {
-                                  
+                                    WhoseTurnReloop();
                                     newGT = gameTime.TotalGameTime.TotalSeconds + 2;
                                     pressingdie = false;
                                 }
 
-                             
-                                
-                                
-
-
-
-                                for (int i = 0; i < playercounter; i++)
+                                if (nhps == false)
                                 {
-                                    _spriteBatch.DrawString(väljspelaretext, "Spelare:" + (i + 1) + "", new Vector2(50 + i * 230, 780), Color.Black);
-                                    _spriteBatch.DrawString(väljspelaretext, +playerhandler[i]._netvalue + " SEK", new Vector2(50 + i * 230, 820), Color.Black);
+                                    GSDecider.Currentstate = GSDecider.Gamestates.plantcard;
                                 }
 
 
 
 
-                              
-
-
-
-
-                                for (int i  = 0; i < playercounter; i++)
+                                if (nhps != false)
                                 {
-                                    playerhandler[i].Draw(_spriteBatch);
+                                    for (int i = 0; i < playercounter; i++)
+                                    {
+                                        if (playerhandler[i]._gamepiececolor != 0)
+                                        {
+                                            _spriteBatch.DrawString(väljspelaretext, playerhandler[i]._playername, new Vector2(50 + i * 230, 780), Color.Red);
+                                        }
+                                        else
+                                        {
+                                            _spriteBatch.DrawString(väljspelaretext, playerhandler[i]._playername, new Vector2(50 + i * 230, 780), Color.Black);
+                                        }
+
+                                        _spriteBatch.DrawString(väljspelaretext, +playerhandler[i]._netvalue + " SEK", new Vector2(50 + i * 230, 820), Color.Black);
+                                    }
+
+
+
+
+
+
+
+
+
+                                    for (int i = 0; i < playercounter; i++)
+                                    {
+                                        playerhandler[i].Draw(_spriteBatch);
+                                    }
                                 }
+                               
 
 
-                                
+
 
                             }
 
-                            
+
 
 
                             break;
@@ -644,29 +785,57 @@ namespace gymnasiearbete
                     //}
 
                     break;
-            
-            
-                    
 
 
-                    
+
+
+
+
 
                 case GSDecider.Gamestates.plantcard:
                     gamestatetextures[2].Draw(_spriteBatch);
-                    for(int i = 0; i < cereal.Count; i++)
+                    for (int i = 0; i < cereal.Count; i++)
                     {
                         cereal[i].Draw(_spriteBatch);
                     }
+                    _spriteBatch.DrawString(väljspelaretext, +playerhandler[whoseturn + 1]._wheaA + " st", new Vector2(50, 820), Color.Black);
+                    _spriteBatch.DrawString(väljspelaretext, +playerhandler[whoseturn + 1]._carrA + " st", new Vector2(150, 820), Color.Black);
+                    _spriteBatch.DrawString(väljspelaretext, +playerhandler[whoseturn + 1]._potaA + " st", new Vector2(250, 820), Color.Black);
+                    _spriteBatch.DrawString(väljspelaretext, +playerhandler[whoseturn + 1]._beetA + " st", new Vector2(350, 820), Color.Black);
+
+                    _spriteBatch.DrawString(väljspelaretext, playerhandler[whoseturn +1]._playername, new Vector2(600, 780), Color.Black);
+
+
+
+                    //for (int i = 0; i < playercounter;)
+                    //{
+                    //    _spriteBatch.DrawString(väljspelaretext, playerhandler[whoseturn + 1]._playername + "tur att vaelja", new Vector2(230, 780), Color.Black);
+
+
+
+
+
+
+
+                    //}
+
+
+
 
                     break;
 
                 case GSDecider.Gamestates.seasoncardY:
                     Seasoncards[0].Draw(_spriteBatch);
+                   
+                    _spriteBatch.DrawString(seasontexts, seasonYtexts[fun], new Vector2(60, 200), Color.Black);
+
+               
 
                     break;
 
                 case GSDecider.Gamestates.seasoncardG:
                     Seasoncards[1].Draw(_spriteBatch);
+
 
                     break;
 

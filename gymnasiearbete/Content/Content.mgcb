@@ -205,6 +205,13 @@
 /processorParam:TextureFormat=Color
 /build:seasoncard vinter.png
 
+#begin seasonYtexts.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:seasonYtexts.spritefont
+
 #begin spelpjäs blå t.png
 /importer:TextureImporter
 /processor:TextureProcessor

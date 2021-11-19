@@ -11,6 +11,7 @@ namespace gymnasiearbete
         {
             menu = 0,
             grid,
+            seeddecider,
             seasoncardY,
             seasoncardG,
             seasoncardR,

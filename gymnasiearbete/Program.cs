@@ -9,14 +9,9 @@ namespace gymnasiearbete
         {
             using (var game = new Game1())
 
-                try
-                {
+              
                     game.Run();
-                }
-                catch
-                {
-
-                }
+                
         }
     }
 }
