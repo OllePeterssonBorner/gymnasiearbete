@@ -73,6 +73,13 @@
 /processorParam:TextureFormat=Color
 /build:cirkel röd t.png
 
+#begin enspelarlagetext.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:enspelarlagetext.spritefont
+
 #begin lower bar template.png
 /importer:TextureImporter
 /processor:TextureProcessor
