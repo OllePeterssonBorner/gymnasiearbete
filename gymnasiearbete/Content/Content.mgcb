@@ -49,6 +49,12 @@
 /processorParam:TextureFormat=Color
 /build:bondespelet spelplan.png
 
+#begin Cartoon Mouse Click - Free Sound Effect.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Cartoon Mouse Click - Free Sound Effect.mp3
+
 #begin cirkel blå t.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -79,6 +85,12 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:enspelarlagetext.spritefont
+
+#begin farming_don_t_starve_together_8_bit_cover_-5422583854073763163.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:farming_don_t_starve_together_8_bit_cover_-5422583854073763163.mp3
 
 #begin lower bar template.png
 /importer:TextureImporter

@@ -34,13 +34,13 @@ namespace gymnasiearbete
 
         public static void UpdateGamestates(List<Buttons> gamebuttons)
         {
-            if (mousereader.LeftClick() && gamebuttons[0]._bb.Contains(mousereader.mouseState.Position))
+            if (mousereader.LeftClick() && gamebuttons[0]._bb.Contains(mousereader.mouseState.Position) && GSDecider.Currentstate == GSDecider.Gamestates.menu)
             {
                 GCurrentState = Gamemodes.singleplayer;
                 Currentstate = Gamestates.grid;
                 singleplayer = true;
             }
-            else if (mousereader.LeftClick() && gamebuttons[1]._bb.Contains(mousereader.mouseState.Position))
+            else if (mousereader.LeftClick() && gamebuttons[1]._bb.Contains(mousereader.mouseState.Position) && GSDecider.Currentstate == GSDecider.Gamestates.menu)
             {
                 GCurrentState = Gamemodes.multiplayer;
                 Currentstate = Gamestates.grid;
